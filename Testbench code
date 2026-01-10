@@ -1,0 +1,52 @@
+module tb_alu4;
+
+    reg  [3:0] A, B;
+    reg  [1:0] SEL;
+    wire [3:0] RESULT;
+    wire CARRY, ZERO, OVERFLOW;
+
+    // Instantiate ALU
+    alu4 uut (
+        .A(A), .B(B), .SEL(SEL),
+        .RESULT(RESULT),
+        .CARRY(CARRY),
+        .ZERO(ZERO),
+        .OVERFLOW(OVERFLOW)
+    );
+
+    initial begin
+        $dumpfile("alu4.vcd");
+        $dumpvars(0, tb_alu4);
+
+        $display("A    B    SEL  RES  C Z O");
+        $display("--------------------------");
+
+        // ADD tests
+        SEL = 2'b00;
+        A = 4'd7;  B = 4'd1;  #1;  // overflow case
+        A = 4'd8;  B = 4'd8;  #1;
+        A = 4'd0;  B = 4'd0;  #1;
+
+        // SUB tests
+        SEL = 2'b01;
+        A = 4'd0;  B = 4'd1;  #1;  // borrow case
+        A = 4'd5;  B = 4'd3;  #1;
+        A = 4'd0;  B = 4'd0;  #1;
+
+        // AND test
+        SEL = 2'b10;
+        A = 4'hA;  B = 4'h5;  #1;
+
+        // OR test
+        SEL = 2'b11;
+        A = 4'hA;  B = 4'h5;  #1;
+
+        $finish;
+    end
+
+    always @(*) begin
+        $display("%b %b  %b   %b   %b %b %b",
+                 A, B, SEL, RESULT, CARRY, ZERO, OVERFLOW);
+    end
+
+endmodule
